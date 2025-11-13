@@ -7,35 +7,43 @@ public class Main {
     }
 }
 
-/* tables?
-movies
-- id prim key
-- tmdb id?
-- title
-- overview
-- release date
-- rating 5 stars
-- year created
-users?
-- id
-- username
-- review count
-m:m
-- movie id
-- user id
-prim(movie, userid)
+/* MAIN M:M
+user and movies have reviews act as the junction
+- one user can review many, one movie can be reviewed by many
+- reviews table is the junction (user id, movie id, rating, review text, watch date)
+
+possible other m to m
+movies and genre - IF movies and users is too barebones idk yet
+- use for browsing or filtering movies
  */
 
-/* classes? sep files
-user.java
-- get functions
-- thats it
-movie.java
-watchlist? act as m to m???
-repo layer - userrepo
-- use resultset connect to api? prob look up how api works first
-- use postgres
-movierrepo? maybe to keep both sets of data separated
-service
-- one for movie and service if we do two for repos
+/* tables brainstorming
+users
+- user id
+- username (shouldn't be unique? display above their review)
+- created_at (date time)
+
+movies
+- movie id (could use tmdb id for this)
+- title
+- release date
+- overview
+
+reviews
+- FK user id
+- FK movie id
+- constraint on user id movie id make it unique
+- rating
+- review text
+- watch date
+- date watched
+
+genres ?
+- genre id
+- genre name
+
+genre junction table
+- FK movie id
+- FK genre id
+- composite key it
  */

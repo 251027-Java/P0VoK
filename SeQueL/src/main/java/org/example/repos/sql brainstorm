@@ -1,0 +1,30 @@
+users
+    user_id INTEGER PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP CURRENT_TIMESTAMP
+
+    CONSTRAINT name_length CHECK (LENGTH(username) >= 3)
+
+movies
+    movie_id INTEGER PRIMARY KEY, -- tmdb id?
+    name VARCHAR(50) NOT NULL,
+    release_date DATE,
+    overview TEXT,
+    runtime INTEGER
+
+    CONSTRAINT runtime_pos CHECK (runtime IS NULL OR runtime > 0),
+    CONSTRAINT id_pos CHECK (movie_id > 0)
+
+reviews
+    review_id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    movie_id INTEGER NOT NULL,
+    rating DECIMAL(3,1) NOT NULL,
+    review TEXT,
+    watch_date DATE
+
+    FK (user_id) REFERENCES users(user_id)
+    FK (movie_id) REFERENCES movies(movie_id)
+
+    CONSTRAINT rating_range CHECK (rating >= 0 AND rating <= 5),
+    CONSTRAINT unique_relation UNIQUE (user_id, movie_id)

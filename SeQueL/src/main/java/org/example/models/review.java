@@ -25,15 +25,40 @@ public class review {
     }
 
     // methods
-    public int getReviewID() { return reviewID; }
-    public int getUserID() { return userID; }
-    public void setUserID(int userID) { this.userID = userID; }
-    public int getMovieID() { return movieID; }
-    public void setMovieID(int movieID) { this.movieID = movieID; }
-    public Date getDate() { return watchDate; }
-    public void setDate(Date date) { this.watchDate = date; }
-    public double getRating() { return rating; }
-    public void setRating(double rating) { this.rating = rating; }
+    public int getReviewID() {
+        return reviewID;
+    }
+    public void setReviewID(int reviewID) {
+        this.reviewID = reviewID;
+    }
+    public int getUserID() {
+        return userID;
+    }
+    public void setUserID(int userID) {
+        this.userID = userID;
+    }
+    public int getMovieID() {
+        return movieID;
+    }
+    public void setMovieID(int movieID) {
+        this.movieID = movieID;
+    }
+
+    public Date getDate() {
+        return watchDate;
+    }
+    public void setDate(Date date) {
+        this.watchDate = date;
+    }
+    public double getRating() {
+        return rating;
+    }
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+    public String getReviewTxt() {
+        return reviewTxt;
+    }
 
     public boolean validRating() {
         // temp thing for rating bc idk how to check if its .0 or .5

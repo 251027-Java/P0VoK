@@ -6,7 +6,7 @@ import java.util.Objects;
 public class user {
 
     // fields
-    private Integer userID;
+    private int userID;
     private String username;
     private LocalDateTime date;
 
@@ -14,17 +14,17 @@ public class user {
     public user() {}
 
     // overload con
-    public user(Integer userID, String username, LocalDateTime date) {
+    public user(int userID, String username, LocalDateTime date) {
         this.userID = userID;
         this.username = username;
         this.date = date;
     }
 
     // methods
-    public Integer getUserID() {
+    public int getUserID() {
         return userID;
     }
-    public void setUserID(Integer userID) {
+    public void setUserID(int userID) {
         this.userID = userID;
     }
 

@@ -155,6 +155,44 @@ public class reviewRepo {
         }
     }
 
+    public int reviewCount (int userID)  throws SQLException {
+        String sql = "SELECT COUNT(*) FROM reviews WHERE userID = ?;";
+
+        Connection c = null;
+        try {
+            c = dbConn.getConn();
+            PreparedStatement stmt = c.prepareStatement(sql);
+            stmt.setInt(1, userID);
+
+            ResultSet r = stmt.executeQuery();
+            if (r.next()) {
+                return r.getInt(1);
+            }
+            return 0;
+        }   finally {
+            dbConn.releaseConn(c);
+        }
+    }
+
+    public Double avgRating (int movieID) throws SQLException {
+        String sql = "SELECT AVG(rating) as avg_rating FROM reviews WHERE movieID = ?;";
+
+        Connection c = null;
+        try {
+            c = dbConn.getConn();
+            PreparedStatement stmt = c.prepareStatement(sql);
+            stmt.setInt(1, movieID);
+
+            ResultSet r = stmt.executeQuery();
+            if (r.next()) {
+                return r.getDouble("avg_rating");
+            }
+            return null;
+        }   finally {
+            dbConn.releaseConn(c);
+        }
+    }
+
     // int userID, int movieID, double rating, String reviewTxt, Date watchDate
     private Object mapRS(ResultSet r) throws SQLException{
         return new review(r.getInt("userID"),
@@ -165,8 +203,24 @@ public class reviewRepo {
         );
     }
 
-    private List<review> execQ(String sql, int userID) {
+    private List<review> execQ(String sql, int p) throws SQLException {
+        List<review> list = new ArrayList<>();
+        Connection c = null;
 
+        try {
+            c = dbConn.getConn();
+            PreparedStatement stmt = c.prepareStatement(sql);
+            stmt.setInt(1, p);
+
+            ResultSet r = stmt.executeQuery();
+            while (r.next()) {
+                list.add((review) mapRS(r));
+            }
+
+            return list;
+        } finally  {
+            dbConn.releaseConn(c);
+        }
     }
 
 }

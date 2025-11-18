@@ -103,4 +103,8 @@ public class userRepo {
         return new user(r.getInt("userID"), r.getString("username"), r.getTimestamp("date").toLocalDateTime());
     }
 
+    public boolean usernameExists(String username) throws SQLException {
+        return readName(username).isPresent();
+    }
+
 }

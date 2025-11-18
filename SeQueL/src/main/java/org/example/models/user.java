@@ -20,6 +20,10 @@ public class user {
         this.date = date;
     }
 
+    public user(String username) {
+        this.username = username;
+    }
+
     // methods
     public int getUserID() {
         return userID;

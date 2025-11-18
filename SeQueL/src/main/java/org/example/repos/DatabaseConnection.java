@@ -11,6 +11,7 @@ public class DatabaseConnection {
     private String pass = "temp";
 
     private List<Connection> connPool;
+    private List<Connection> usedConns = new ArrayList<>();
 
     private DatabaseConnection() {
         connPool = new ArrayList<>(5);
@@ -20,5 +21,48 @@ public class DatabaseConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static DatabaseConnection getInstance() {
+        if (instance == null) {
+            synchronized (DatabaseConnection.class) {
+                instance = new DatabaseConnection();
+            }
+        }
+
+        return instance;
+    }
+
+    public synchronized Connection getConn() throws SQLException {
+        if (connPool.isEmpty() && usedConns.size() < 10) {
+            connPool.add(DriverManager.getConnection(url, username, pass));
+        }
+
+        Connection tempC = connPool.remove(connPool.size() - 1);
+
+        if (!tempC.isValid(1)) {
+            tempC = DriverManager.getConnection(url, username, pass);
+        }
+        usedConns.add(tempC);
+        return tempC;
+    }
+
+    public synchronized void releaseConn(Connection c) {
+        if (c != null) {
+            usedConns.remove(c);
+            connPool.add(c);
+        }
+    }
+
+    private void closeConn(Connection c) throws SQLException {
+        if (c != null && !c.isClosed()) c.close();
+    }
+
+    public int getPoolSize() {
+        return connPool.size() + usedConns.size();
+    }
+
+    public int availConns() {
+        return connPool.size();
     }
 }

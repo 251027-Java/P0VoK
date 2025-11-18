@@ -36,7 +36,7 @@ public class movie {
     @Override
     public String toString() {
         return "Movie: " + "movieID : " + movieID +
-                "\nname : " + name +
+                "\nname : " + name
                 "\nrelease date : " + releaseDate;
     }
 }

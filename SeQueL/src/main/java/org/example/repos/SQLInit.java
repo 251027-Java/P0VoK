@@ -3,24 +3,89 @@ package org.example.repos;
 import java.sql.*;
 
 public class SQLInit {
+    private DatabaseConnection dbConn;
 
     public SQLInit() {
+        this.dbConn = DatabaseConnection.getInstance();
     }
 
-    private void createUserTable() {
-        try (Statement stmt = connection.createStatement()) {
-            String sql = """
-                    CREATE TABLE IF NOT EXIST users (
-                        user_id INTEGER PRIMARY KEY,
-                        username VARCHAR(50) NOT NULL,
-                        created_at TIMESTAMP CURRENT_TIMESTAMP
-                    )
-                    """;
+    public void init() throws SQLException {
+        System.out.println("Checking / Creating database schema...");
 
+        createUsersTable();
+        createMoviesTable();
+        createReviewsTable();
+
+        System.out.println("DB initialized.");
+    }
+
+    private void  createUsersTable() throws SQLException {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS users (
+                    userID SERIAL PRIMARY KEY,
+                    username VARCHAR(50) UNIQUE NOT NULL,
+                    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    
+                    CONSTRAINT name_length CHECK (LENGTH(username) >= 3)
+                )
+                """;
+
+        execSQL(sql);
+        execSQL("CREATE INDEX IF NOT EXISTS idx_username ON users(username)");
+    }
+
+    private void createMoviesTable() throws SQLException {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS movies (
+                    movieID SERIAL PRIMARY KEY,
+                    title VARCHAR(50) UNIQUE NOT NULL,
+                    director VARCHAR(50) UNIQUE NOT NULL,
+                    release_date DATE,
+                    overview TEXT,
+                    runtime INTEGER,
+                    
+                    CONSTRAINT tmdb_id CHECK (movieID > 0),
+                    CONSTRAINT runtime_pos CHECK (runtime IS NOT NULL OR runtime > 0)
+                    )
+        """;
+
+        execSQL(sql);
+        execSQL("CREATE INDEX IF NOT EXISTS idx_movieID ON movies(movieID)");
+        execSQL("CREATE INDEX IF NOT EXISTS idx_title ON movies(title)");
+    }
+
+    private void createReviewsTable() throws SQLException {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS reviews (
+                    reviewID INTEGER PRIMARY KEY,
+                    userID INTEGER NOT NULL,
+                    movieID INTEGER NOT NULL,
+                    rating DECIMAL(3,1) NOT NULL,
+                    review TEXT,
+                    watch_date DATE,
+                    
+                    FOREIGN KEY (userID) REFERENCES users(userID),
+                    FOREIGN KEY (movieID) REFERENCES movies(movieID),
+                    
+                    CONSTRAINT rating_range CHECK (rating >= 0 AND rating <= 5)
+                    CONSTRAINT unique_relation UNIQUE (userID, movieID)
+                )
+        """;
+
+        execSQL(sql);
+        execSQL("CREATE INDEX IF NOT EXIST idx_rev_userID ON reviews(userID)");
+        execSQL("CREATE INDEX IF NOT EXIST idx_rev_movieID ON reviews(movieID)");
+
+    }
+
+    private void execSQL(String sql) throws SQLException {
+        Connection c = null;
+        try {
+            c = dbConn.getConn();
+            Statement stmt = c.createStatement();
             stmt.execute(sql);
-            System.out.println("User table created.");
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } finally {
+            dbConn.releaseConn(c);
         }
     }
 

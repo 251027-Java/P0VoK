@@ -1,6 +1,7 @@
 package org.example.repos;
 
 import org.example.models.movie;
+import org.example.models.user;
 
 import java.sql.*;
 import java.util.Optional;
@@ -42,6 +43,34 @@ public class movieRepo {
         } finally {
             dbConn.releaseConn(c);
         }
+    }
+
+    public Optional<movie> readID(Integer movieID) throws SQLException {
+        String sql = "SELECT * FROM movies WHERE movieID = ?";
+        Connection c = null;
+        try {
+            c = dbConn.getConn();
+            PreparedStatement stmt = c.prepareStatement(sql);
+
+            stmt.setInt(1, movieID);
+
+            ResultSet r = stmt.executeQuery();
+            if (r.next()) return Optional.of((movie) mapRS(r));
+
+            return Optional.empty();
+        } finally {
+            dbConn.releaseConn(c);
+        }
+    }
+
+    private Object mapRS(ResultSet r) throws SQLException{
+        return new movie(r.getInt("movieID"),
+        r.getString("name"),
+        r.getDate("releaseDate"),
+        r.getString("director"),
+        r.getInt("runtime"),
+        r.getString("overview")
+        );
     }
 
 }

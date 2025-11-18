@@ -15,6 +15,7 @@ public class userRepo {
     public user create(user u) throws SQLException {
         String sql = "INSERT INTO users (username, date) VALUES (?, ?) RETURNING userID";
         Connection c = null;
+
         try {
             c = dbConn.getConn();
             PreparedStatement stmt = c.prepareStatement(sql);

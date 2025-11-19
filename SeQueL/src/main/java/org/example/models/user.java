@@ -10,6 +10,8 @@ public class user {
     private String username;
     private LocalDateTime date;
 
+    public int reviewCount = 0;
+
     // default con
     public user() {}
 
@@ -44,6 +46,13 @@ public class user {
     }
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public int getReviewCount() {
+        return reviewCount;
+    }
+    public void setReviewCount(int reviewCount) {
+        this.reviewCount = reviewCount;
     }
 
     @Override

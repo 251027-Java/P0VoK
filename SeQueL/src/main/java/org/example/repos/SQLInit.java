@@ -78,6 +78,39 @@ public class SQLInit {
 
     }
 
+    private void createGenresTable() throws SQLException {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS genres (
+                    genreID INTEGER PRIMARY KEY,
+                    movieID INTEGER UNIQUE NOT NULL,
+                    name  VARCHAR(50) UNIQUE NOT NULL,
+                    
+                    CONSTRAINT id_pos CHECK (movieID > 0)
+                )
+        """;
+
+        execSQL(sql);
+
+        execSQL("CREATE INDEX IF NOT EXISTS idx_genres_movie ON genres(movieID)");
+    }
+
+    private void createMGJunctionTable() throws SQLException {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS movie_genres (
+                    movieID INTEGER NOT NULL,
+                    genreID INTEGER NOT NULL,
+                    
+                    PRIMARY KEY(movieID, genreID)
+                )
+        """;
+
+        execSQL(sql);
+
+        String sqlFK1 = """
+                
+                """
+    }
+
     private void execSQL(String sql) throws SQLException {
         Connection c = null;
         try {

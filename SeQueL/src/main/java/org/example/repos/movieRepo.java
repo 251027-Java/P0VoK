@@ -1,5 +1,6 @@
 package org.example.repos;
 
+import org.example.models.genre;
 import org.example.models.movie;
 import org.example.models.user;
 
@@ -102,6 +103,76 @@ public class movieRepo {
             stmt.setInt(6, m.getMovieID());
 
             stmt.executeUpdate();
+        }  finally {
+            dbConn.releaseConn(c);
+        }
+    }
+
+    public void addGenre(int movieID, int genreID) throws SQLException {
+        String sql = "INSERT INTO genres (movieID, genreID) VALUES (?, ?) ON CONFLICT DO NOTHING";
+
+        Connection c = null;
+        try {
+            c = dbConn.getConn();
+            PreparedStatement stmt = c.prepareStatement(sql);
+            stmt.setInt(1, movieID);
+            stmt.setInt(2, genreID);
+            stmt.executeUpdate();
+
+        }  finally {
+            dbConn.releaseConn(c);
+        }
+    }
+
+    public List<genre> getGenre(int movieID) throws SQLException {
+        String sql = """
+                SELECT g.* FROM genres g
+                JOIN movie_genres mg ON g.genreID = mg.genreID
+                WHERE mg.movieID = ?
+                """;
+        List<genre> genres = new ArrayList<>();
+
+        Connection c = null;
+        try {
+            c = dbConn.getConn();
+            PreparedStatement stmt = c.prepareStatement(sql);
+            stmt.setInt(1, movieID);
+
+            ResultSet r = stmt.executeQuery();
+            while (r.next()) {
+                genres.add(new genre(r.getInt("genreID"),
+                        r.getInt("movieID"),
+                        r.getString("name")
+                ));
+            }
+
+            return genres;
+        } finally {
+            dbConn.releaseConn(c);
+        }
+    }
+
+    public List<movie> getMoviesByGenre(int genreID) throws SQLException {
+        String sql = """
+                 SELECT m.* FROM movies m
+                 JOIN movie_genres mg ON m.movieID = mg.movieID
+                 WHERE mg.genreID = ?
+                 ORDER BY m.releaseDate DESC
+                 """;
+        List<movie> movies = new ArrayList<>();
+
+        Connection c = null;
+        try {
+            c = dbConn.getConn();
+            PreparedStatement stmt = c.prepareStatement(sql);
+            stmt.setInt(1, genreID);
+
+            ResultSet r = stmt.executeQuery();
+            while (r.next()) {
+                movies.add((movie) mapRS(r));
+            }
+
+            return movies;
         }  finally {
             dbConn.releaseConn(c);
         }

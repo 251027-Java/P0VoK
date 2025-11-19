@@ -67,14 +67,14 @@ public class SQLInit {
                     FOREIGN KEY (userID) REFERENCES users(userID),
                     FOREIGN KEY (movieID) REFERENCES movies(movieID),
                     
-                    CONSTRAINT rating_range CHECK (rating >= 0 AND rating <= 5)
+                    CONSTRAINT rating_range CHECK (rating >= 0 AND rating <= 5),
                     CONSTRAINT unique_relation UNIQUE (userID, movieID)
                 )
         """;
 
         execSQL(sql);
-        execSQL("CREATE INDEX IF NOT EXIST idx_rev_userID ON reviews(userID)");
-        execSQL("CREATE INDEX IF NOT EXIST idx_rev_movieID ON reviews(movieID)");
+        execSQL("CREATE INDEX IF NOT EXISTS idx_rev_userID ON reviews(userID)");
+        execSQL("CREATE INDEX IF NOT EXISTS idx_rev_movieID ON reviews(movieID)");
 
     }
 
@@ -108,7 +108,7 @@ public class SQLInit {
 
         String sqlFK1 = """
                 
-                """
+                """;
     }
 
     private void execSQL(String sql) throws SQLException {

@@ -40,7 +40,7 @@ public class userService {
         user u = test.get();
         return Optional.of(u); // may add password? bc like anybody can access this..
     }
-    
+
     private void validateName(String username) {
     }
 }

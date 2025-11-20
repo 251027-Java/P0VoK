@@ -1,5 +1,6 @@
 package org.example.models;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class review {
@@ -10,13 +11,13 @@ public class review {
     private int movieID;
     private double rating; // HAS TO BE IN THE FORM OF 5 STARS LETTERBOXD
     private String reviewTxt;
-    private Date watchDate;
+    private LocalDate watchDate;
 
     // default con
     public review() {}
 
     // overload con
-    public review(int userID, int movieID, double rating, String reviewTxt, Date watchDate) {
+    public review(int userID, int movieID, double rating, String reviewTxt, LocalDate watchDate) {
         this.userID = userID;
         this.movieID = movieID;
         this.rating = rating;
@@ -44,10 +45,10 @@ public class review {
         this.movieID = movieID;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return watchDate;
     }
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.watchDate = date;
     }
     public double getRating() {
@@ -58,6 +59,9 @@ public class review {
     }
     public String getReviewTxt() {
         return reviewTxt;
+    }
+    public void setReviewTxt(String reviewTxt) {
+        this.reviewTxt = reviewTxt;
     }
 
     public boolean validRating() {

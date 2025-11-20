@@ -4,6 +4,7 @@ import org.example.models.movie;
 import org.example.models.review;
 import java.sql.*;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 /*
@@ -42,7 +43,7 @@ public class reviewRepo {
             stmt.setInt(2, re.getMovieID());
             stmt.setDouble(3, re.getRating());
             stmt.setString(4, re.getReviewTxt());
-            stmt.setDate(5, (Date) re.getDate()); // i dont know may have to change
+            stmt.setDate(5, Date.valueOf(re.getDate())); // i dont know may have to change
 
             ResultSet r = stmt.executeQuery();
             if (r.next()) {
@@ -131,7 +132,7 @@ public class reviewRepo {
 
             stmt.setDouble(1, re.getRating());
             stmt.setString(2, re.getReviewTxt());
-            stmt.setDate(3, (Date) re.getDate());
+            stmt.setDate(3, Date.valueOf(re.getDate()));
             stmt.setInt(4, re.getReviewID());
 
             stmt.executeUpdate();
@@ -199,7 +200,7 @@ public class reviewRepo {
                 r.getInt("movieID"),
                 r.getDouble("rating"),
                 r.getString("reviewTxt"),
-                r.getDate("watchDate")
+                r.getDate("watchDate").toLocalDate()
         );
     }
 
@@ -223,4 +224,6 @@ public class reviewRepo {
         }
     }
 
+    public Optional<review> findUserMovie(String review) {
+    }
 }

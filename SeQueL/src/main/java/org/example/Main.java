@@ -1,7 +1,23 @@
 package org.example;
 
+import org.example.repos.DatabaseConnection;
+import org.example.repos.SQLInit;
+
+import java.sql.SQLException;
+
 public class Main {
     static void main() {
+        DatabaseConnection c = new DatabaseConnection();
+
+        try {
+            SQLInit init = new SQLInit();
+
+            init.init();
+            c.getInstance();
+
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+        }
 
 
     }

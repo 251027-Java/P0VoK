@@ -15,6 +15,9 @@ public class SQLInit {
         createUsersTable();
         createMoviesTable();
         createReviewsTable();
+        createGenresTable();
+        createMGJunctionTable();
+        createWatchlistTable();
 
         System.out.println("DB initialized.");
     }
@@ -94,21 +97,59 @@ public class SQLInit {
         execSQL("CREATE INDEX IF NOT EXISTS idx_genres_movie ON genres(movieID)");
     }
 
+    // copied from the SeQueL.sql file so it looks a little jank may go back and fix after i run it and test
     private void createMGJunctionTable() throws SQLException {
         String sql = """
                 CREATE TABLE IF NOT EXISTS movie_genres (
-                    movieID INTEGER NOT NULL,
-                    genreID INTEGER NOT NULL,
-                    
-                    PRIMARY KEY(movieID, genreID)
-                )
+                                            movieID INTEGER NOT NULL,
+                                            genreID INTEGER NOT NULL,
+                
+                                            PRIMARY KEY(movieID, genreID),
+                
+                                            FOREIGN KEY (movieID) REFERENCES movies(movieID),
+                                            FOREIGN KEY (genreID) REFERENCES genres(genreID)
+                                        )
         """;
 
         execSQL(sql);
 
-        String sqlFK1 = """
+        execSQL("CREATE INDEX IF NOT EXISTS idx_mg_movie on movie_genres(movieID)");
+        execSQL("CREATE INDEX IF NOT EXISTS idx_mg_genre on movie_genres(genreID)");
+    }
+
+    private void createWatchlistTable() throws SQLException {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS watchlist (
+                            watchlistID INTEGER PRIMARY KEY,
+                            userID INTEGER NOT NULL,
+                            movieID INTEGER NOT NULL,
+                            watchDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 
-                """;
+                            FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE,
+                            FOREIGN KEY (movieID) REFERENCES movies(movieID) ON DELETE CASCADE,
+                
+                            CONSTRAINT unique_watch UNIQUE (userID, movieID)
+                        )
+        """;
+
+        execSQL(sql);
+
+        execSQL("CREATE INDEX IF NOT EXISTS idx_watchlist_user ON watchlist(userID)");
+        execSQL("CREATE INDEX IF NOT EXISTS idx_watchlist_movie ON watchlist(movieID)");
+    }
+
+    public void dropTables() throws SQLException {
+        execSQL("DROP TABLE IF EXISTS watchlist CASCADE");
+        execSQL("DROP TABLE IF EXISTS movie_genres CASCADE");
+        execSQL("DROP TABLE IF EXISTS reviews CASCADE");
+        execSQL("DROP TABLE IF EXISTS genres CASCADE");
+        execSQL("DROP TABLE IF EXISTS movies CASCADE");
+        execSQL("DROP TABLE IF EXISTS users CASCADE");
+    }
+
+    public void reset() throws SQLException {
+        dropTables();
+        init();
     }
 
     private void execSQL(String sql) throws SQLException {

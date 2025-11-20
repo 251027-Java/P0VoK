@@ -6,14 +6,14 @@ import java.util.List;
 
 public class DatabaseConnection {
     private static DatabaseConnection instance;
-    private String url = "temp";
-    private String username = "temp";
-    private String pass = "temp";
+    private String url = "jdbc:postgresql://localhost:5432/sequel";
+    private String username = "postgres";
+    private String pass = "testPass123";
 
     private List<Connection> connPool;
     private List<Connection> usedConns = new ArrayList<>();
 
-    private DatabaseConnection() {
+    public DatabaseConnection() {
         connPool = new ArrayList<>(5);
 
         try {

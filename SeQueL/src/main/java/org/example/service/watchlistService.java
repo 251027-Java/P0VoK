@@ -34,7 +34,7 @@ public class watchlistService {
                 throw new IllegalArgumentException("movie not real");
             }
 
-            if (watchlistRepo.findUserMovie(userID,movieID)) {
+            if (watchlistRepo.onList(userID,movieID)) {
                 throw new IllegalArgumentException("you already reviewed this");
             }
 

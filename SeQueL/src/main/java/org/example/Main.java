@@ -13,7 +13,6 @@ public class Main {
             SQLInit init = new SQLInit();
 
             init.init();
-            c.getInstance();
 
         } catch (SQLException e) {
             System.out.println("SQLException: " + e.getMessage());

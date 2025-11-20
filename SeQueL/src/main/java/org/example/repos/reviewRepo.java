@@ -224,6 +224,23 @@ public class reviewRepo {
         }
     }
 
-    public Optional<review> findUserMovie(String review) {
+    public Optional<review> findUserMovie(int userID, int movieID) throws SQLException {
+        String sql = "SELECT * FROM reviews WHERE userID = ? AND movieID = ?;";
+        Connection c = null;
+
+        try {
+            c = dbConn.getConn();
+            PreparedStatement stmt = c.prepareStatement(sql);
+            stmt.setInt(1, userID);
+            stmt.setInt(2, movieID);
+
+            ResultSet r = stmt.executeQuery();
+            if (r.next()) {
+                return Optional.of((review) mapRS(r));
+            }
+            return Optional.empty();
+        }  finally  {
+            dbConn.releaseConn(c);
+        }
     }
 }

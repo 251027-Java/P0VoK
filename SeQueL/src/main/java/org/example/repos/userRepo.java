@@ -12,6 +12,7 @@ public class userRepo {
         this.dbConn = DatabaseConnection.getInstance();
     }
 
+    // instead of using the actual object repos to create the db, use them primarily to do CRUD
     public user create(user u) throws SQLException {
         String sql = "INSERT INTO users (username, date) VALUES (?, ?) RETURNING userID";
         Connection c = null;
@@ -100,7 +101,9 @@ public class userRepo {
     }
 
     private user mapRS(ResultSet r) throws SQLException {
-        return new user(r.getInt("userID"), r.getString("username"), r.getTimestamp("date").toLocalDateTime());
+        return new user(r.getInt("userID"),
+                r.getString("username"),
+                r.getTimestamp("date").toLocalDateTime());
     }
 
     public boolean usernameExists(String username) throws SQLException {

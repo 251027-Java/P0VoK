@@ -10,6 +10,7 @@ public class user {
     private String username;
     private LocalDateTime date;
 
+    // use this later don't really need to include in database its just a basic select command anyway
     public int reviewCount = 0;
 
     // default con

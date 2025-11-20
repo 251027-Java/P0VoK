@@ -48,7 +48,7 @@ public class movieRepo {
         }
     }
 
-    public Optional<movie> readID(Integer movieID) throws SQLException {
+    public Optional<movie> readID(int movieID) throws SQLException {
         String sql = "SELECT * FROM movies WHERE movieID = ?";
         Connection c = null;
         try {

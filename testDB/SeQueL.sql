@@ -1,6 +1,8 @@
 -- Active: 1762362899455@@127.0.0.1@5432
 -- Active: 1762362899455@@127.0.0.1@5432
 
+CREATE DATABASE SeQueL;
+
 CREATE TABLE IF NOT EXISTS public.users (
                     userID SERIAL PRIMARY KEY,
                     username VARCHAR(50) UNIQUE NOT NULL,

@@ -54,8 +54,19 @@ public class DatabaseConnection {
         }
     }
 
-    private void closeConn(Connection c) throws SQLException {
-        if (c != null && !c.isClosed()) c.close();
+    public void shutdown() {
+        usedConns.forEach(this::closeConn);
+        connPool.forEach(this::closeConn);
+        connPool.clear();
+        usedConns.clear();
+    }
+
+    private void closeConn(Connection c) {
+        try {
+            if (c != null && !c.isClosed()) c.close();
+        } catch (SQLException e) {
+            System.err.println("error closing connection: " + e.getMessage());
+        }
     }
 
     public int getPoolSize() {

@@ -42,7 +42,7 @@ public class TMDbService {
     public List<TMDb> searchMovies(String q) {
         try {
             String encodedQ = URLEncoder.encode(q, StandardCharsets.UTF_8);
-            String endpoint = String.format("%s/search/movie?api_key=%s&q=%s", URL, apiKey, encodedQ);
+            String endpoint = String.format("%s/search/movie?api_key=%s&query=%s", URL, apiKey, encodedQ);
 
             String jsonResponse = makeApiReq(endpoint);
             JsonObject response = gson.fromJson(jsonResponse, JsonObject.class);
@@ -56,7 +56,7 @@ public class TMDbService {
 
             return searchList;
         }  catch (Exception e) {
-            throw new RuntimeException("TMDb search failed.");
+            throw new RuntimeException("TMDb search failed: " + e.getMessage(), e);
         }
     }
 
@@ -69,7 +69,7 @@ public class TMDbService {
 
             return parseDetails(response);
         } catch (Exception e) {
-            throw new RuntimeException("failed to get details from TMDb");
+            throw new RuntimeException("failed to get details from TMDb: " + e.getMessage(), e);
         }
     }
 
@@ -117,7 +117,15 @@ public class TMDbService {
 
         int respCode =  conn.getResponseCode();
         if (respCode != 200) {
-            throw new IOException("HTTP error code : " + respCode);
+            // Try to read error response
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            StringBuilder errorResponse = new StringBuilder();
+            String errorLine;
+            while ((errorLine = errorReader.readLine()) != null) {
+                errorResponse.append(errorLine);
+            }
+            errorReader.close();
+            throw new IOException("HTTP error code: " + respCode + " - " + errorResponse.toString());
         }
 
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -165,7 +173,7 @@ public class TMDbService {
         }
 
         public String getYear() {
-            if (releaseDate != null) {
+            if (releaseDate == null || releaseDate.isEmpty()) {
                 return "Unknown";
             }
 

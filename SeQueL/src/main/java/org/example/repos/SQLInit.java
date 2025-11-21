@@ -120,7 +120,7 @@ public class SQLInit {
     private void createWatchlistTable() throws SQLException {
         String sql = """
                 CREATE TABLE IF NOT EXISTS watchlist (
-                            watchlistID INTEGER PRIMARY KEY,
+                            watchlistID SERIAL PRIMARY KEY,
                             userID INTEGER NOT NULL,
                             movieID INTEGER NOT NULL,
                             watchDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

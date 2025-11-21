@@ -44,7 +44,9 @@ public class watchlistService {
             return watchlistRepo.create(entry);
 
         } catch (SQLException e) {
-            throw new RuntimeException("failed to add to watchlist");
+            throw new RuntimeException("failed to add to watchlist: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw e; // Re-throw validation errors as-is
         }
     }
 

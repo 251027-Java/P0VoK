@@ -14,7 +14,7 @@ public class watchlist {
 
     public watchlist() {}
 
-    public watchlist(int useID, int movieID) {
+    public watchlist(int userID, int movieID) {
         this.userID = userID;
         this.movieID = movieID;
         this.watchDate = LocalDateTime.now();

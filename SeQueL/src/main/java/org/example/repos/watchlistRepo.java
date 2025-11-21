@@ -155,8 +155,8 @@ public class watchlistRepo {
                 r.getTimestamp("watchDate").toLocalDateTime()
         );
 
-        w.setMovieName(r.getString("movieName"));
-        Object releaseYear = r.getObject("releaseYear");
+        w.setMovieName(r.getString("title"));
+        Object releaseYear = r.getObject("release_year");
         if (releaseYear != null) {
             w.setReleaseYear(((Number) releaseYear).intValue());
         }

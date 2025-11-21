@@ -4,7 +4,6 @@ import org.example.models.user;
 import org.example.repos.userRepo;
 import org.example.service.userService;
 import org.example.repos.reviewRepo;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,28 +35,24 @@ public class userTest {
     @InjectMocks
     private userService userService;
 
-    private user tester;
-
-    @BeforeEach
-    public void setUp() {
-        tester = new user("testuser");
-    }
-
     // happy path register user
     @Test
     void registerUser() throws SQLException {
         // arrange
         String username = "kenneth";
+        user expectedUser = new user(username);
 
         when(userRepo.usernameExists(username)).thenReturn(false);
+        when(userRepo.create(any(user.class))).thenReturn(expectedUser);
 
         // act
         user result = userService.register(username);
 
         // assert
         assertNotNull(result);
-        assertEquals(tester.getUserID(), result.getUserID());
-        verify(userRepo).readName(tester.getUsername()).isPresent();
+        assertEquals(username, result.getUsername());
+        verify(userRepo).usernameExists(username);
+        verify(userRepo).create(any(user.class));
     }
 
     // negative path duplicate registeration
@@ -96,14 +92,18 @@ public class userTest {
     void minValid() throws SQLException {
         // arrange
         String username = "ken";
+        user expectedUser = new user(username);
 
         when(userRepo.usernameExists(username)).thenReturn(false);
+        when(userRepo.create(any(user.class))).thenReturn(expectedUser);
 
         // act
         user result = userService.register(username);
 
         // assert
         assertNotNull(result);
+        assertEquals(username, result.getUsername());
+        verify(userRepo).usernameExists(username);
         verify(userRepo).create(any(user.class));
     }
 
@@ -118,7 +118,8 @@ public class userTest {
 
         // assert
         assertTrue(exception.getMessage().contains("username must be in the bounds"));
-        verify(userRepo).usernameExists(username);
+        // validateName is called first and throws before usernameExists is called
+        verify(userRepo, never()).usernameExists(username);
     }
 
 }

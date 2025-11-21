@@ -10,7 +10,7 @@ public class SQLInit {
     }
 
     public void init() throws SQLException {
-        System.out.println("Checking / Creating database schema...");
+        System.out.println("checking / creating database schema...");
 
         createUsersTable();
         createMoviesTable();
@@ -113,6 +113,7 @@ public class SQLInit {
         init();
     }
 
+    // use to execute the sql queries
     private void execSQL(String sql) throws SQLException {
         Connection c = null;
         try {

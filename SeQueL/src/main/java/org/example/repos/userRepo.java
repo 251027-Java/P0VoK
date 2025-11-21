@@ -12,7 +12,6 @@ public class userRepo {
         this.dbConn = DatabaseConnection.getInstance();
     }
 
-    // instead of using the actual object repos to create the db, use them primarily to do CRUD
     public user create(user u) throws SQLException {
         String sql = "INSERT INTO users (username, date) VALUES (?, ?) RETURNING userID";
         Connection c = null;

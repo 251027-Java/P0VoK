@@ -26,7 +26,6 @@ public class watchlistTest {
     private watchlistService watchlistService;
 
     // tdd test check if movie is in watchlist
-    // comment out inWatchlist()
     @Test
     void testInWatchlist() throws SQLException {
         // arrange

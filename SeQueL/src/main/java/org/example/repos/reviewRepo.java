@@ -30,6 +30,7 @@ public class reviewRepo {
         this.dbConn = DatabaseConnection.getInstance();
     }
 
+    // create
     public review create(review re) throws SQLException {
         String sql = "INSERt INTO reviews (userID, movieID, rating, review, watch_date)" +
                 "VALUES (?, ?, ?, ?, ?) RETURNING reviewID";
@@ -56,6 +57,7 @@ public class reviewRepo {
         }
     }
 
+    // reads
     public Optional<review> findByIDS(int userID, int movieID) throws SQLException {
         String sql = """
                 SELECT r.*, u.username, m.title as movie_title
@@ -122,6 +124,7 @@ public class reviewRepo {
         return execQ(sql, limit);
     }
 
+    // update
     public void update (review re)  throws SQLException {
         String sql = "UPDATE reviews SET rating = ?, review = ?, watch_date = ? WHERE reviewID = ?;";
 
@@ -141,6 +144,7 @@ public class reviewRepo {
         }
     }
 
+    // delete
     public void delete (int reviewID) throws SQLException {
         String sql = "DELETE FROM reviews WHERE reviewID = ?;";
 
@@ -156,6 +160,7 @@ public class reviewRepo {
         }
     }
 
+    // use for viewReviews
     public int reviewCount (int userID)  throws SQLException {
         String sql = "SELECT COUNT(*) FROM reviews WHERE userID = ?;";
 
@@ -175,6 +180,7 @@ public class reviewRepo {
         }
     }
 
+    // use for viewMovieReviews
     public Double avgRating (int movieID) throws SQLException {
         String sql = "SELECT AVG(rating) as avg_rating FROM reviews WHERE movieID = ?;";
 
@@ -195,6 +201,7 @@ public class reviewRepo {
     }
 
     // int userID, int movieID, double rating, String reviewTxt, Date watchDate
+    // use to map the results to the review object
     private Object mapRS(ResultSet r) throws SQLException{
         review rev = new review(r.getInt("userID"),
                 r.getInt("movieID"),
@@ -208,6 +215,7 @@ public class reviewRepo {
         return rev;
     }
 
+    // use to make executing the queries easier
     private List<review> execQ(String sql, int p) throws SQLException {
         List<review> list = new ArrayList<>();
         Connection c = null;
@@ -228,6 +236,7 @@ public class reviewRepo {
         }
     }
 
+    // use for createReview
     public Optional<review> findUserMovie(int userID, int movieID) throws SQLException {
         String sql = """
                 SELECT r.*, u.username, m.title as movie_title

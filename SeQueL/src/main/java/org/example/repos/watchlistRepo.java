@@ -144,6 +144,7 @@ public class watchlistRepo {
         }
     }
 
+    // use for inWatchlist
     public boolean onList(int userID, int movieID) throws SQLException {
         return findUserMovie(userID, movieID).isPresent();
     }

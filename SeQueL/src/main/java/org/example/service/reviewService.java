@@ -40,7 +40,7 @@ public class reviewService {
             }
 
             // check if already reviewed
-            Optional<review> rOpt = reviewRepo.findUserMovie(userID, movieID); // YOOO MAKE THIS
+            Optional<review> rOpt = reviewRepo.findUserMovie(userID, movieID); // Y
             if (rOpt.isPresent()) {
                 throw new IllegalArgumentException("review already exists");
             }
@@ -107,6 +107,7 @@ public class reviewService {
         }
     }
 
+    // use for createReview
     public boolean checkReviewed(int userID, int movieID) {
         try {
             return reviewRepo.findUserMovie(userID, movieID).isPresent();
@@ -115,6 +116,7 @@ public class reviewService {
         }
     }
 
+    // use for viewMovieReviews
     public stats getMovieStats(int movieID) {
         try {
             Optional<movie> moOpt = movieRepo.readID(movieID);

@@ -1,7 +1,6 @@
 package org.example.repos;
 
 import org.example.models.movie;
-import org.example.models.user;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -56,6 +55,24 @@ public class movieRepo {
             PreparedStatement stmt = c.prepareStatement(sql);
 
             stmt.setInt(1, movieID);
+
+            ResultSet r = stmt.executeQuery();
+            if (r.next()) return Optional.of((movie) mapRS(r));
+
+            return Optional.empty();
+        } finally {
+            dbConn.releaseConn(c);
+        }
+    }
+
+    public Optional<movie> readByTitle(String title) throws SQLException {
+        String sql = "SELECT * FROM movies WHERE title = ?";
+        Connection c = null;
+        try {
+            c = dbConn.getConn();
+            PreparedStatement stmt = c.prepareStatement(sql);
+
+            stmt.setString(1, title);
 
             ResultSet r = stmt.executeQuery();
             if (r.next()) return Optional.of((movie) mapRS(r));

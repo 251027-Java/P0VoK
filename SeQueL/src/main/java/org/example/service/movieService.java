@@ -22,17 +22,31 @@ public class movieService {
 
     public movie cache(movie m, List<Integer> genreID) {
         try {
+            Optional<movie> checkByTitle = movieRepo.readByTitle(m.getName());
+            if (checkByTitle.isPresent()) {
+                return checkByTitle.get();
+            }
+
             Optional<movie> checkM = movieRepo.readID(m.getMovieID());
             if (checkM.isPresent()) {
                 return checkM.get();
             }
 
-            movie save = movieRepo.create(m);
-
-            return save;
+            try {
+                movie save = movieRepo.create(m);
+                return save;
+            } catch (SQLException e) {
+                if (e.getMessage() != null && e.getMessage().contains("duplicate key value violates unique constraint")) {
+                    Optional<movie> existing = movieRepo.readByTitle(m.getName());
+                    if (existing.isPresent()) {
+                        return existing.get();
+                    }
+                }
+                throw e;
+            }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to cache movie: " + e.getMessage(), e);
         }
     }
 
@@ -48,5 +62,3 @@ public class movieService {
         }
     }
 }
-
-

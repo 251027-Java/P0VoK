@@ -13,6 +13,9 @@ public class review {
     private String reviewTxt;
     private LocalDate watchDate;
 
+    private String movieName;
+    private String username;
+
     // default con
     public review() {}
 
@@ -43,6 +46,18 @@ public class review {
     }
     public void setMovieID(int movieID) {
         this.movieID = movieID;
+    }
+    public String getMovieName() {
+        return movieName;
+    }
+    public void setMovieName(String movieName) {
+        this.movieName = movieName;
+    }
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public LocalDate getDate() {

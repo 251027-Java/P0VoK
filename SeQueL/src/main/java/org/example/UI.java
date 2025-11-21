@@ -49,10 +49,10 @@ public class UI {
             }
         }
 
-        cleanup();
+        scanner.close();
     }
 
-    private void loginScreen() {
+    private void loginScreen() throws SQLException {
         clearScreen();
         System.out.println("1. login");
         System.out.println("2. register");
@@ -88,7 +88,7 @@ public class UI {
             currentUser = newUser;
             pause();
 
-        } catch (IllegalAccessException | SQLException e) {
+        } catch (SQLException e) {
             System.out.println("registration error: " + e.getMessage());
             pause();
         }
@@ -114,12 +114,33 @@ public class UI {
     }
 
     private void displayReview(review r) {
+        System.out.println("movie: " + r.getMovieName());
+        System.out.println("rating: " + r.getFormattedRating());
+        System.out.println("review: " + r.getReviewTxt());
+        System.out.println("watch date: " + r.getDate());
+        System.out.println("\nlogged by: " + r.getUsername());
     }
 
     private void printIntro() {
+        System.out.println("SeQueL");
     }
 
     private void clearScreen() {
+        for (int i = 0; i < 50; i++) {
+            System.out.println();
+        }
+    }
+
+    private void logout() {
+        currentUser = null;
+        System.out.println("logged out successfully");
+        System.out.println("byebye");
+        pause();
+    }
+
+    private void exit() {
+        System.out.println("byebye");
+        running = false;
     }
 
     private void pause() {
@@ -141,13 +162,27 @@ public class UI {
         }
     }
 
+    private double getDoubleInput(double min, double max) {
+        while (true) {
+            try {
+                double val = Double.parseDouble(scanner.nextLine());
+                if (val >= min && val <= max) {
+                    return val;
+                }
+                System.out.printf("enter value between %d and %d: ", min, max);
+            } catch (NumberFormatException e) {
+                System.out.println("invalid. enter a number: ");
+            }
+        }
+    }
+    
     private void mainMenu() {
         clearScreen();
         System.out.println("1.  Search Movies (TMDb)");
         System.out.println("2.  Log a Movie");
         System.out.println("3.  View My Reviews");
         System.out.println("4.  View My Watchlist");
-        System.out.println("5.  Browse by Genre");
+        //System.out.println("5.  Browse by Genre");
         System.out.println("6.  Recent Reviews (Social Feed)");
         System.out.println("7.  My Profile & Stats");
         System.out.println("8.  Logout");
@@ -169,7 +204,7 @@ public class UI {
                 viewWatchlist();
                 break;
             case "5":
-                browseGenre();
+                //browseGenre();
                 break;
             case "6":
                 recentReviews();
@@ -433,6 +468,133 @@ public class UI {
         }
 
     }
+
+    private void viewReviews() {
+        clearScreen();
+
+        try {
+            List<review> reviews = reviewService.getUserReviews(currentUser.getUserID());
+            if (reviews.isEmpty()) {
+                System.out.println("no reviews.. yo should review it!");
+                pause();
+                return;
+            }
+
+            System.out.println("total reviews: " + reviews.size());
+
+            for (int i = 0; i < reviews.size(); i++) {
+                review r = reviews.get(i);
+                System.out.printf("%d. ", i + 1);
+                displayReview(r);
+                System.out.println("- - -");
+            }
+
+            System.out.println("1. delete review");
+            System.out.println("0. main menu");
+
+            String input = scanner.nextLine();
+
+            if (input.equals("1")) {
+                System.out.print("enter review ID: ");
+                int reviewID = getIntInput(1, reviews.size());
+                reviewService.deleteReview(reviewID);
+                System.out.println("review deleted successfully");
+                pause();
+            }
+
+        } catch (Exception e) {
+            System.out.println("failed to view reviews: " + e.getMessage());
+            pause();
+        }
+    }
+
+    private void viewWatchlist() {
+        clearScreen();
+        System.out.println("my watchlist :)");
+
+        try {
+            List<watchlist> watchlist = watchlistService.getWatchlist(currentUser.getUserID());
+            if (watchlist.isEmpty()) {
+                System.out.println("your watchlist is empty.");
+                System.out.println("do you need some recs...");
+                pause();
+                return;
+            }
+
+            System.out.println("total movies: " + watchlist.size());
+            for (int i = 0; i < watchlist.size(); i++) {
+                watchlist w = watchlist.get(i);
+                System.out.printf("%d. %s (%s)\n", i + 1, w.getMovieName(), w.getReleaseYear());
+            }
+
+            System.out.println("\n1. remove from watchlist");
+            System.out.println("0. Back");
+
+            String input = scanner.nextLine();
+
+            if (input.equals("1")) {
+                System.out.print("enter watchlist ID: ");
+                int watchlistID = getIntInput(1, watchlist.size());
+                watchlistService.removeFromWatchlist(currentUser.getUserID(), watchlistID);
+                System.out.println("movie removed from watchlist successfully");
+                pause();
+            }
+        } catch (Exception e) {
+            System.out.println("failed to view watchlist: " + e.getMessage());
+            pause();
+        }
+    }
+
+    private void browseGenre() {
+        clearScreen();
+        System.out.println("browse by genre");
+    }
+
+    private void recentReviews() {
+        clearScreen();
+        System.out.println("recent reviews");
+
+        try {
+            List<review> reviews = reviewService.getRecent(10);
+
+            if (reviews.isEmpty()) {
+                System.out.println("no reviews yet.. no ones using my app...");
+                pause();
+                return;
+            }
+
+            for (review r : reviews) {
+                displayReview(r);
+                System.out.println("- - -");
+            }
+
+            pause();
+            
+        } catch (Exception e) {
+            System.out.println("failed to view recent reviews: " + e.getMessage());
+            pause();
+        }
+    }
+
+    private void profile() {
+        clearScreen();
+        System.out.println("your profile");
+
+        try {
+            user s = userService.getStats(currentUser.getUserID());
+
+            System.out.println("username: " + s.getUsername());
+            System.out.println("member since: " + s.getDate());
+            System.out.println("total reviews: " + s.getReviewCount());
+            System.out.println("total watchlist: " + watchlistService.getCount(currentUser.getUserID()));
+            pause();
+            
+        } catch (Exception e) {
+            System.out.println("failed to view profile: " + e.getMessage());
+            pause();
+        }
+    }
+    
     
 
 

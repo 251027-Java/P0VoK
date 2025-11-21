@@ -94,5 +94,5 @@ public class reviewTest {
         // assert
         assertEquals(testReview.getReviewID(), result.get(0).getReviewID());
         verify(reviewRepo).findUser(userID);
-    
+    }
 }

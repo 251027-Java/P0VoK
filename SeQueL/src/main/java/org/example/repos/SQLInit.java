@@ -70,7 +70,7 @@ public class SQLInit {
                     FOREIGN KEY (userID) REFERENCES users(userID),
                     FOREIGN KEY (movieID) REFERENCES movies(movieID),
                     
-                    CONSTRAINT rating_range CHECK (rating >= 0 AND rating <= 5),
+                    CONSTRAINT rating_range CHECK (rating >= 0 AND rating <= 5 AND (rating * 2)::integer = rating * 2),
                     CONSTRAINT unique_relation UNIQUE (userID, movieID)
                 )
         """;

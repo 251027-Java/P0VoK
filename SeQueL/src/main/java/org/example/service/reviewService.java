@@ -136,8 +136,12 @@ public class reviewService {
         if (rating == null) {
             throw new IllegalArgumentException("rating cannot be null");
         }
-        if (rating < 0 || rating > 10) {
-            throw new IllegalArgumentException("rating must be between 0.0 and 10");
+        if (rating < 0 || rating > 5) {
+            throw new IllegalArgumentException("rating must be between 0.0 and 5.0");
+        }
+        double doubled = rating * 2;
+        if (Math.abs(doubled - Math.round(doubled)) > 0.001) {
+            throw new IllegalArgumentException("rating must be in half-star increments (0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5)");
         }
     }
 
@@ -163,7 +167,7 @@ public class reviewService {
         }
 
         public String getFormattedAvg() {
-            return String.format("%.1f/10", avg);
+            return String.format("%.1f/5", avg);
         }
     }
 }

@@ -7,20 +7,19 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.time.LocalDateTime;
 import java.time.LocalDate;
 
 public class TMDbService {
-    private static String URL = "";
+    private static String URL = "https://api.themoviedb.org/3";
     private String apiKey = "";
     private Gson gson = new Gson();
 
     public TMDbService() {
-        this.apiKey = loadApiKey();
+        this.apiKey = "abbd15cbef07d75707399ba1bce3d65b";
         this.gson = new Gson();
     }
 
-    private String loadApiKey() {
+    /*private String loadApiKey() {
         Properties p =  new Properties();
 
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
@@ -38,7 +37,7 @@ public class TMDbService {
         }  catch (IOException e) {
             throw new RuntimeException("error loading API config");
         }
-    }
+    }*/
 
     public List<TMDb> searchMovies(String q) {
         try {

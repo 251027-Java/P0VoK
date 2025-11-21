@@ -5,6 +5,7 @@ import org.example.models.movie;
 import org.example.models.user;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -179,9 +180,12 @@ public class movieRepo {
     }
 
     private Object mapRS(ResultSet r) throws SQLException{
+        java.sql.Date releaseDateSql = r.getDate("release_date");
+        LocalDate releaseDate = releaseDateSql != null ? releaseDateSql.toLocalDate() : null;
+        
         return new movie(r.getInt("movieID"),
-        r.getString("name"),
-        r.getTimestamp("releaseDate").toLocalDateTime().toLocalDate(),
+        r.getString("title"),
+        releaseDate,
         r.getString("director"),
         r.getInt("runtime"),
         r.getString("overview")

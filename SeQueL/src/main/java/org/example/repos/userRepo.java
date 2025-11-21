@@ -43,7 +43,9 @@ public class userRepo {
             stmt.setInt(1, userID);
 
             ResultSet r = stmt.executeQuery();
-            if (r.next()) Optional.of(mapRS(r));
+            if (r.next()) {
+                return Optional.of(mapRS(r));
+            }
 
             return Optional.empty();
         } finally {

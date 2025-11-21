@@ -35,7 +35,7 @@ public class movieRepo {
 
             stmt.setString(1, m.getName());
             stmt.setString(2, m.getDirector());
-            stmt.setDate(3, new java.sql.Date(m.getReleaseDate().getTime())); // intellisense answer may change
+            stmt.setDate(3, Date.valueOf(m.getReleaseDate())); // intellisense answer may change
             stmt.setString(4, m.getOverview());
             stmt.setInt(5, m.getRuntime());
 
@@ -97,7 +97,7 @@ public class movieRepo {
 
             stmt.setString(1, m.getName());
             stmt.setString(2, m.getDirector());
-            stmt.setDate(3, new java.sql.Date(m.getReleaseDate().getTime()));
+            stmt.setDate(3, Date.valueOf(m.getReleaseDate()));
             stmt.setString(4, m.getOverview());
             stmt.setInt(5, m.getRuntime());
             stmt.setInt(6, m.getMovieID());
@@ -181,7 +181,7 @@ public class movieRepo {
     private Object mapRS(ResultSet r) throws SQLException{
         return new movie(r.getInt("movieID"),
         r.getString("name"),
-        r.getDate("releaseDate"),
+        r.getTimestamp("releaseDate").toLocalDateTime().toLocalDate(),
         r.getString("director"),
         r.getInt("runtime"),
         r.getString("overview")

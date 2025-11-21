@@ -353,7 +353,7 @@ public class UI {
             }
 
             clearScreen();
-            System.out.print("enter your rating (0-5, half-stars allowed: 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5): ");
+            System.out.print("enter your rating (0-5, half-stars allowed): ");
             double rating = getRatingInput();
 
             System.out.print("enter your review (press enter to skip): ");

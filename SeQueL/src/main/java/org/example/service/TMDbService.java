@@ -83,10 +83,11 @@ public class TMDbService {
             releaseDate = LocalDate.parse(json.get("release_date").getAsString());
         }
 
+        String director = json.has("director") ? json.get("director").getAsString() : null;
         String overview = json.has("overview") ? json.get("overview").getAsString() : null;
         Integer runtime = json.has("runtime") ? json.get("runtime").getAsInt() : null;
 
-        return new movie(tmdbID, title, releaseDate, overview, runetime); // create constructor for this
+        return new movie(tmdbID, title, releaseDate, director, runtime, overview); // create constructor for this
     }
 
     private TMDb parseSearch(JsonObject json) {

@@ -1,6 +1,6 @@
 package org.example.models;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /*
 movies
@@ -23,7 +23,7 @@ public class movie {
     // fields
     private int movieID;
     private String name;
-    private Date releaseDate;
+    private LocalDate releaseDate;
     private String director;
     private int runtime;
     private String overview;
@@ -32,7 +32,7 @@ public class movie {
     public movie() {}
 
     // overload con
-    public movie(int movieID, String name, Date releaseDate, String director, int runtime, String overview) {
+    public movie(int movieID, String name, LocalDate releaseDate, String director, int runtime, String overview) {
         this.movieID = movieID;
         this.name = name;
         this.releaseDate = releaseDate;
@@ -51,7 +51,7 @@ public class movie {
     public String getName() {
         return name;
     }
-    public Date getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
     public String getDirector() {

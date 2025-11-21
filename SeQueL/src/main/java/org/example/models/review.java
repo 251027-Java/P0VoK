@@ -76,4 +76,8 @@ public class review {
                 "\nRating : " + rating +
                 "\n" + reviewTxt;
     }
+
+    public String getFormattedRating() {
+        return String.format("%.1f/10", rating);
+    }
 }

@@ -3,6 +3,8 @@ package org.example;
 import org.example.service.*;
 import org.example.models.*;
 import org.example.service.TMDbService.TMDb;
+import org.example.service.movieService.MovieWGenres;
+import org.example.service.reviewService.stats;
 
 import java.sql.SQLException;
 import java.time.*;
@@ -109,6 +111,9 @@ public class UI {
             System.out.println("login failed! ");
             pause();
         }
+    }
+
+    private void displayReview(review r) {
     }
 
     private void printIntro() {
@@ -243,9 +248,192 @@ public class UI {
                 System.out.println("movie is in your db!");
 
                 // STOPPED HERE ADD SHOWING STATS
+                stats s = reviewService.getMovieStats(tempMovie.getMovieID());
+                System.out.printf("avg rating: %s (%d reviews)\n", s.getAvg(), s.getTotal());
             }
+
+            System.out.println("1. log this movie");
+            System.out.println("2. add to watchlist");
+            System.out.println("3. view reviews");
+            System.out.println("0. back");
+
+            String input = scanner.nextLine();
+
+            switch (input) {
+                case "1":
+                    logSpecific(m, tID.getGenreIDs());
+                    break;
+                case "2":
+                    addFromSearch(m, tID.getGenreIDs());
+                    break;
+                case "3":
+                    viewSpecificReviews(m, tID.getGenreIDs());
+                    break;
+                case "0":
+                    return;
+                default:
+                    System.out.println("invalid input. try again.");
+            }
+            
+        } catch (Exception e) {
+            System.out.println("failed to load details: " + e.getMessage());
+            pause();
         }
     }
+
+    private void logSpecific(movie m, List<Integer> genreIDs) {
+        try {
+            movie cached = movieService.cache(m, genreIDs);
+
+            if (reviewService.checkReviewed(currentUser.getUserID(), cached.getMovieID())) {
+                System.out.println("you already reviewed this movie");
+                pause();
+                return;
+            }
+
+            clearScreen();
+            System.out.print("enter your rating (1-10): ");
+            double rating = getDoubleInput(0.0, 10.0);
+
+            scanner.nextLine();
+
+            System.out.print("enter your review (press enter to skip): ");
+            String review = scanner.nextLine();
+
+            System.out.print("enter the date you watched the movie (YYYY-MM-DD, or ENTER to): ");
+            String watchDate = scanner.nextLine();
+            LocalDate date = watchDate.isEmpty() ? LocalDate.now() : LocalDate.parse(watchDate);
+
+            review r = reviewService.create(currentUser.getUserID(), cached.getMovieID(), rating, review, date);
+
+            System.out.println("movie logged successfully");
+            System.out.println("rating: " + r.getFormattedRating());
+            pause();
+
+        } catch (Exception e) {
+            System.out.println("failed to log movie: " + e.getMessage());
+            pause();
+        }
+    }
+
+    private void addFromSearch(movie m, List<Integer> genreIDs) {
+        try {
+        movie cached = movieService.cache(m, genreIDs);
+
+        if (watchlistService.inWatchlist(currentUser.getUserID(), cached.getMovieID())) {
+            System.out.println("you already added this movie to your watchlist");
+            pause();
+            return;
+        }
+
+        watchlistService.addToWatchlist(currentUser.getUserID(), cached.getMovieID());
+        System.out.println("movie added to watchlist successfully");
+        pause();
+
+        } catch (Exception e) {
+            System.out.println("failed to add movie to watchlist: " + e.getMessage());
+            pause();
+        }
+    }
+
+    private void viewSpecificReviews(movie m, List<Integer> genreIDs) {
+        try {
+            Optional<MovieWGenres> cOpt = movieService.getMovieID(m.getMovieID());
+
+            if (cOpt.isEmpty()) {
+                System.out.println("no reviews.. yo should review it!");
+                pause();
+                return;
+            }
+
+            movie cached = cOpt.get().getMovie();
+            List<review> reviews = reviewService.getMovieReviews(cached.getMovieID());
+            clearScreen();
+
+            System.out.println("reviews for " + cached.getName());
+            stats s = reviewService.getMovieStats(cached.getMovieID());
+            System.out.printf("avg rating: %s (%d reviews)\n", s.getAvg(), s.getTotal());
+
+            System.out.println("reviews: ");
+            for (review r : reviews) {
+                displayReview(r);
+                System.out.println();
+            }
+
+            pause();
+
+        } catch (Exception e) {
+            System.out.println("failed to view specific reviews: " + e.getMessage());
+            pause();
+        }
+    }
+
+    private void logMovie() {
+        clearScreen();
+        System.out.println("enter movie title: ");
+        String title = scanner.nextLine();
+
+        if (title.isEmpty()) {
+            System.out.println("movie title is empty");
+            pause();
+            return;
+        }
+        
+        System.out.println("kennethGPT searching TMDb . . .");
+
+        try {
+            List<movie> movies = movieService.searchCached(title);
+
+            if (movies.isEmpty()) {
+                System.out.println("no movies found");
+                pause();
+                return;
+            }
+
+            System.out.println("search results");
+            for (int i = 0; i < movies.size(); i++) {
+                movie m = movies.get(i);
+                System.out.printf("%d. %s (%s)\n", i + 1, m.getName(), m.getReleaseDate());
+            }
+            System.out.println("\n0. main menu");
+
+            int selection = getIntInput(0, movies.size());
+            if (selection == 0) return;
+
+            movie selected = movies.get(selection - 1);
+
+            if (reviewService.checkReviewed(currentUser.getUserID(), selected.getMovieID())) {
+                System.out.println("you already reviewed this movie");
+                pause();
+                return;
+            }
+
+            System.out.print("enter your rating (1-10): ");
+            double rating = getDoubleInput(0.0, 10.0);
+
+            scanner.nextLine();
+
+            System.out.print("enter your review (press enter to skip): ");
+            String review = scanner.nextLine();
+
+            System.out.print("enter the date you watched the movie (YYYY-MM-DD, or ENTER to skip): ");
+            String watchDate = scanner.nextLine();
+            LocalDate date = watchDate.isEmpty() ? LocalDate.now() : LocalDate.parse(watchDate);
+
+            review r = reviewService.create(currentUser.getUserID(), selected.getMovieID(), rating, review, date);
+
+            System.out.println("movie logged successfully");
+            System.out.println("rating: " + r.getFormattedRating());
+            pause();
+
+        
+        } catch (Exception e) {
+            System.out.println("failed to log movie: " + e.getMessage());
+            pause();
+        }
+
+    }
+    
 
 
 }

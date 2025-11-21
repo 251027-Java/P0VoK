@@ -176,6 +176,32 @@ public class UI {
         }
     }
 
+    private double getRatingInput() {
+        while (true) {
+            try {
+                String input = scanner.nextLine().trim();
+                double val = Double.parseDouble(input);
+                
+                // Check if rating is between 0 and 5
+                if (val < 0 || val > 5) {
+                    System.out.print("rating must be between 0 and 5. try again: ");
+                    continue;
+                }
+                
+                // Check if rating is a valid half-star increment
+                double doubled = val * 2;
+                if (Math.abs(doubled - Math.round(doubled)) > 0.001) {
+                    System.out.print("rating must be in half-star increments (0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5). try again: ");
+                    continue;
+                }
+                
+                return val;
+            } catch (NumberFormatException e) {
+                System.out.print("invalid. enter a number: ");
+            }
+        }
+    }
+
     private void mainMenu() {
         clearScreen();
         System.out.println("1.  Search Movies (TMDb)");
@@ -327,8 +353,8 @@ public class UI {
             }
 
             clearScreen();
-            System.out.print("enter your rating (1-10): ");
-            double rating = getDoubleInput(0.0, 10.0);
+            System.out.print("enter your rating (0-5, half-stars allowed: 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5): ");
+            double rating = getRatingInput();
 
             System.out.print("enter your review (press enter to skip): ");
             String review = scanner.nextLine();
@@ -441,8 +467,8 @@ public class UI {
                 return;
             }
 
-            System.out.print("enter your rating (1-10): ");
-            double rating = getDoubleInput(0.0, 10.0);
+            System.out.print("enter your rating (0-5, half-stars allowed: 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5): ");
+            double rating = getRatingInput();
 
             scanner.nextLine();
 

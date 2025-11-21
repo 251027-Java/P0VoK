@@ -80,9 +80,10 @@ public class review {
     }
 
     public boolean validRating() {
-        // temp thing for rating bc idk how to check if its .0 or .5
-        if (rating > 0 && rating < 10) return true;
-        return false;
+        // Check if rating is between 0 and 5 and is a valid half-star increment
+        if (rating < 0 || rating > 5) return false;
+        double doubled = rating * 2;
+        return Math.abs(doubled - Math.round(doubled)) < 0.001;
     }
 
     @Override
@@ -93,6 +94,6 @@ public class review {
     }
 
     public String getFormattedRating() {
-        return String.format("%.1f/10", rating);
+        return String.format("%.1f/5", rating);
     }
 }

@@ -59,7 +59,7 @@ public class Main {
     }
 }
 
-/* MAIN M:M
+/* MAIN M:M1
 user and movies have reviews act as the junction
 - one user can review many, one movie can be reviewed by many
 - reviews table is the junction (user id, movie id, rating, review text, watch date)

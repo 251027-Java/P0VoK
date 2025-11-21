@@ -19,6 +19,8 @@ public class UI {
 
     private user currentUser;
     private boolean running;
+    private static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLUE = "\u001B[34m";
 
     public UI() {
         this.scanner = new Scanner(System.in);
@@ -31,7 +33,7 @@ public class UI {
         this.running = true;
     }
 
-    public void start() {
+    public void start() throws InterruptedException {
         printIntro();
 
         while (running) {
@@ -52,7 +54,6 @@ public class UI {
     }
 
     private void loginScreen() throws SQLException {
-        clearScreen();
         System.out.println("1. login");
         System.out.println("2. register");
         System.out.println("3. quit");
@@ -103,7 +104,7 @@ public class UI {
 
         if (uOpt.isPresent()) {
             currentUser = uOpt.get();
-            System.out.println("login successful! ");
+            System.out.println("login successful!");
             pause();
         }
         else {
@@ -117,11 +118,41 @@ public class UI {
         System.out.println("rating: " + r.getFormattedRating());
         System.out.println("review: " + r.getReviewTxt());
         System.out.println("watch date: " + r.getDate());
-        System.out.println("\nlogged by: " + r.getUsername());
+        System.out.println("\nlogged by: " + ANSI_BLUE + r.getUsername() + ANSI_RESET);
     }
 
-    private void printIntro() {
-        System.out.println("SeQueL");
+    private void printIntro() throws InterruptedException {
+        clearScreen();
+        System.out.println("                 ██████╗      ");
+        System.out.println("                ██╔═══██╗      ");
+        System.out.println("                ██║   ██║       ");
+        System.out.println("                ██║▄▄ ██║        ");
+        System.out.println("                ╚██████╔╝         ");
+        System.out.println("                 ╚══▀▀═╝           ");
+        Thread.sleep(1000);
+        clearScreen();
+        System.out.println("███████╗         ██████╗         ");
+        System.out.println("██╔════╝        ██╔═══██╗        ");
+        System.out.println("███████╗        ██║   ██║        ");
+        System.out.println("╚════██║        ██║▄▄ ██║        ");
+        System.out.println("███████║        ╚██████╔╝        ");
+        System.out.println("╚══════╝         ╚══▀▀═╝         ");
+        Thread.sleep(1000);
+        clearScreen();
+        System.out.println("███████╗         ██████╗                  ██╗     ");
+        System.out.println("██╔════╝        ██╔═══██╗                 ██║     ");
+        System.out.println("███████╗        ██║   ██║                 ██║     ");
+        System.out.println("╚════██║        ██║▄▄ ██║                 ██║     ");
+        System.out.println("███████║        ╚██████╔╝                 ███████╗");
+        System.out.println("╚══════╝         ╚══▀▀═╝                  ╚══════╝");
+        Thread.sleep(1000);
+        clearScreen();
+        System.out.println("███████╗███████╗ ██████╗ ██╗   ██╗███████╗██╗     ");
+        System.out.println("██╔════╝██╔════╝██╔═══██╗██║   ██║██╔════╝██║     ");
+        System.out.println("███████╗█████╗  ██║   ██║██║   ██║█████╗  ██║     ");
+        System.out.println("╚════██║██╔══╝  ██║▄▄ ██║██║   ██║██╔══╝  ██║     ");
+        System.out.println("███████║███████╗╚██████╔╝╚██████╔╝███████╗███████╗");
+        System.out.println("╚══════╝╚══════╝ ╚══▀▀═╝  ╚═════╝ ╚══════╝╚══════╝");
     }
 
     private void clearScreen() {
@@ -133,12 +164,10 @@ public class UI {
     private void logout() {
         currentUser = null;
         System.out.println("logged out successfully");
-        System.out.println("byebye");
         pause();
     }
 
     private void exit() {
-        System.out.println("byebye");
         running = false;
     }
 
@@ -189,6 +218,7 @@ public class UI {
 
     private void mainMenu() {
         clearScreen();
+        System.out.println(ANSI_BLUE + "              menu   " + ANSI_RESET);
         System.out.println("1.  Search Movies (TMDb)");
         System.out.println("2.  View My Reviews");
         System.out.println("3.  View My Watchlist");
@@ -233,9 +263,19 @@ public class UI {
 
         if (movieName.isEmpty()) {
             System.out.println("movie name is empty");
+            return;
         }
 
-        System.out.println("kennethGPT searching TMDb . . .");
+        System.out.println("\n     '-.");
+        System.out.println("        '-. _____ ");
+        System.out.println(" .-._      |     '. ");
+        System.out.println(":  ..      |      :  ");
+        System.out.println("'-._+      |    .-'");
+        System.out.println(" /  |     .'i--i");
+        System.out.println("/   | .-'_/____ |___");
+        System.out.println("    .-'  :          :");
+
+        System.out.println("\nkennethGPT searching TMDb . . .\n");
 
         try {
             List<TMDb> results =  tmDbService.searchMovies(movieName);
@@ -276,7 +316,7 @@ public class UI {
 
             System.out.println("title: " + m.getName());
             System.out.println("release date: " + m.getReleaseDate());
-            System.out.println("runtime: " + m.getRuntime());
+            System.out.println("runtime: " + m.getRuntime() + " min");
             System.out.println("\noverview: ");
             System.out.println(m.getOverview());
 
@@ -411,7 +451,7 @@ public class UI {
         try {
             List<review> reviews = reviewService.getUserReviews(currentUser.getUserID());
             if (reviews.isEmpty()) {
-                System.out.println("no reviews.. yo should review it!");
+                System.out.println("no reviews.. you should review it!");
                 pause();
                 return;
             }
@@ -420,7 +460,7 @@ public class UI {
 
             for (int i = 0; i < reviews.size(); i++) {
                 review r = reviews.get(i);
-                System.out.printf("%d. ", i + 1);
+                System.out.printf("\n%d. ", i + 1);
                 displayReview(r);
                 System.out.println("- - -");
             }
@@ -460,7 +500,7 @@ public class UI {
             System.out.println("total movies: " + watchlist.size());
             for (int i = 0; i < watchlist.size(); i++) {
                 watchlist w = watchlist.get(i);
-                System.out.printf("%d. %s (%s)\n", i + 1, w.getMovieName(), w.getReleaseYear());
+                System.out.printf("\n%d. %s (%s)\n", i + 1, w.getMovieName(), w.getReleaseYear());
             }
 
             System.out.println("\n1. remove from watchlist");
@@ -472,7 +512,7 @@ public class UI {
                 System.out.print("enter watchlist ID: ");
                 int watchlistID = getIntInput(1, watchlist.size());
                 watchlistService.removeFromWatchlist(currentUser.getUserID(), watchlistID);
-                System.out.println("movie removed from watchlist successfully");
+                System.out.println("movie removed from watchlist :(");
                 pause();
             }
         } catch (Exception e) {
@@ -497,7 +537,7 @@ public class UI {
 
             for (review r : reviews) {
                 displayReview(r);
-                System.out.println("- - -");
+                System.out.println("- - - - - - - - - - - - -");
             }
 
             pause();
@@ -510,12 +550,12 @@ public class UI {
 
     private void profile() {
         clearScreen();
-        System.out.println("your profile");
+        System.out.println("your profile\n");
 
         try {
             user s = userService.getStats(currentUser.getUserID());
 
-            System.out.println("username: " + s.getUsername());
+            System.out.println("username: " + ANSI_BLUE + s.getUsername() + ANSI_RESET);
             System.out.println("member since: " + s.getDate());
             System.out.println("total reviews: " + s.getReviewCount());
             System.out.println("total watchlist: " + watchlistService.getCount(currentUser.getUserID()));

@@ -91,7 +91,7 @@ public class reviewRepo {
                 INNER JOIN users u ON r.userID = u.userID
                 INNER JOIN movies m ON r.movieID = m.movieID
                 WHERE r.userID = ?
-                ORDER BY r.reviewDate DESC;
+                ORDER BY r.watch_date DESC;
         """;
 
         return execQ(sql, userID);
@@ -104,7 +104,7 @@ public class reviewRepo {
                 INNER JOIN users u ON r.userID = u.userID
                 INNER JOIN movies m ON r.movieID = m.movieID
                 WHERE r.movieID = ?
-                ORDER BY r.reviewDate DESC;
+                ORDER BY r.watch_date DESC;
         """;
 
         return execQ(sql, movieID);
@@ -116,7 +116,7 @@ public class reviewRepo {
                 FROM reviews r
                 INNER JOIN users u ON r.userID = u.userID
                 INNER JOIN movies m ON r.movieID = m.movieID
-                ORDER BY r.reviewDate DESC LIMIT ?;
+                ORDER BY r.watch_date DESC LIMIT ?;
         """;
 
         return execQ(sql, limit);
@@ -196,12 +196,16 @@ public class reviewRepo {
 
     // int userID, int movieID, double rating, String reviewTxt, Date watchDate
     private Object mapRS(ResultSet r) throws SQLException{
-        return new review(r.getInt("userID"),
+        review rev = new review(r.getInt("userID"),
                 r.getInt("movieID"),
                 r.getDouble("rating"),
-                r.getString("reviewTxt"),
-                r.getDate("watchDate").toLocalDate()
+                r.getString("review"),
+                r.getDate("watch_date").toLocalDate()
         );
+        rev.setReviewID(r.getInt("reviewID"));
+        rev.setUsername(r.getString("username"));
+        rev.setMovieName(r.getString("movie_title"));
+        return rev;
     }
 
     private List<review> execQ(String sql, int p) throws SQLException {
@@ -225,7 +229,13 @@ public class reviewRepo {
     }
 
     public Optional<review> findUserMovie(int userID, int movieID) throws SQLException {
-        String sql = "SELECT * FROM reviews WHERE userID = ? AND movieID = ?;";
+        String sql = """
+                SELECT r.*, u.username, m.title as movie_title
+                FROM reviews r
+                INNER JOIN users u ON r.userID = u.userID
+                INNER JOIN movies m ON r.movieID = m.movieID
+                WHERE r.userID = ? AND r.movieID = ?;
+                """;
         Connection c = null;
 
         try {

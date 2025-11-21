@@ -63,10 +63,6 @@ public class Main {
 user and movies have reviews act as the junction
 - one user can review many, one movie can be reviewed by many
 - reviews table is the junction (user id, movie id, rating, review text, watch date)
-
-possible other m to m
-movies and genre - IF movies and users is too barebones idk yet
-- use for browsing or filtering movies
  */
 
 /* tables brainstorming
@@ -89,13 +85,4 @@ reviews
 - review text
 - watch date
 - date watched
-
-genres ?
-- genre id
-- genre name
-
-genre junction table
-- FK movie id
-- FK genre id
-- composite key it
  */

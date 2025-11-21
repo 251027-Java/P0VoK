@@ -3,7 +3,6 @@ package org.example;
 import org.example.service.*;
 import org.example.models.*;
 import org.example.service.TMDbService.TMDb;
-import org.example.service.movieService.MovieWGenres;
 import org.example.service.reviewService.stats;
 
 import java.sql.SQLException;
@@ -162,20 +161,6 @@ public class UI {
         }
     }
 
-    private double getDoubleInput(double min, double max) {
-        while (true) {
-            try {
-                double val = Double.parseDouble(scanner.nextLine());
-                if (val >= min && val <= max) {
-                    return val;
-                }
-                System.out.printf("enter value between %d and %d: ", min, max);
-            } catch (NumberFormatException e) {
-                System.out.println("invalid. enter a number: ");
-            }
-        }
-    }
-
     private double getRatingInput() {
         while (true) {
             try {
@@ -205,14 +190,12 @@ public class UI {
     private void mainMenu() {
         clearScreen();
         System.out.println("1.  Search Movies (TMDb)");
-        //System.out.println("2.  Log a Movie");
-        System.out.println("3.  View My Reviews");
-        System.out.println("4.  View My Watchlist");
-        //System.out.println("5.  Browse by Genre");
-        System.out.println("6.  Recent Reviews (Social Feed)");
-        System.out.println("7.  My Profile & Stats");
-        System.out.println("8.  Logout");
-        System.out.println("9.  Exit");
+        System.out.println("2.  View My Reviews");
+        System.out.println("3.  View My Watchlist");
+        System.out.println("4.  Recent Reviews (Social Feed)");
+        System.out.println("5.  My Profile & Stats");
+        System.out.println("6.  Logout");
+        System.out.println("7.  Exit");
 
         String input = scanner.nextLine();
 
@@ -220,28 +203,22 @@ public class UI {
             case "1":
                 searchMovies();
                 break;
-            /*case "2":
-                logMovie();
-                break;*/
-            case "3":
+            case "2":
                 viewReviews();
                 break;
-            case "4":
+            case "3":
                 viewWatchlist();
                 break;
-            case "5":
-                //browseGenre();
-                break;
-            case "6":
+            case "4":
                 recentReviews();
                 break;
-            case "7":
+            case "5":
                 profile();
                 break;
-            case "8":
+            case "6":
                 logout();
                 break;
-            case "9":
+            case "7":
                 exit();
                 break;
             default:
@@ -303,9 +280,9 @@ public class UI {
             System.out.println("\noverview: ");
             System.out.println(m.getOverview());
 
-            Optional<movieService.MovieWGenres> cached = movieService.getMovieID(m.getMovieID());
+            Optional<movie> cached = movieService.getMovieID(m.getMovieID());
             if (cached.isPresent()) {
-                movie tempMovie = cached.get().getMovie();
+                movie tempMovie = cached.get();
                 System.out.println("movie is in your db!");
 
                 // STOPPED HERE ADD SHOWING STATS
@@ -397,7 +374,7 @@ public class UI {
 
     private void viewSpecificReviews(movie m, List<Integer> genreIDs) {
         try {
-            Optional<MovieWGenres> cOpt = movieService.getMovieID(m.getMovieID());
+            Optional<movie> cOpt = movieService.getMovieID(m.getMovieID());
 
             if (cOpt.isEmpty()) {
                 System.out.println("no reviews.. yo should review it!");
@@ -405,7 +382,7 @@ public class UI {
                 return;
             }
 
-            movie cached = cOpt.get().getMovie();
+            movie cached = cOpt.get();
             List<review> reviews = reviewService.getMovieReviews(cached.getMovieID());
             clearScreen();
 
@@ -427,71 +404,6 @@ public class UI {
         }
     }
 
-    /*private void logMovie() {
-        clearScreen();
-        System.out.println("enter movie title: ");
-        String title = scanner.nextLine();
-
-        if (title.isEmpty()) {
-            System.out.println("movie title is empty");
-            pause();
-            return;
-        }
-        
-        System.out.println("kennethGPT searching TMDb . . .");
-
-        try {
-            List<movie> movies = movieService.searchCached(title);
-
-            if (movies.isEmpty()) {
-                System.out.println("no movies found");
-                pause();
-                return;
-            }
-
-            System.out.println("search results");
-            for (int i = 0; i < movies.size(); i++) {
-                movie m = movies.get(i);
-                System.out.printf("%d. %s (%s)\n", i + 1, m.getName(), m.getReleaseDate());
-            }
-            System.out.println("\n0. main menu");
-
-            int selection = getIntInput(0, movies.size());
-            if (selection == 0) return;
-
-            movie selected = movies.get(selection - 1);
-
-            if (reviewService.checkReviewed(currentUser.getUserID(), selected.getMovieID())) {
-                System.out.println("you already reviewed this movie");
-                pause();
-                return;
-            }
-
-            System.out.print("enter your rating (0-5, half-stars allowed: 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5): ");
-            double rating = getRatingInput();
-
-            scanner.nextLine();
-
-            System.out.print("enter your review (press enter to skip): ");
-            String review = scanner.nextLine();
-
-            System.out.print("enter the date you watched the movie (YYYY-MM-DD, or ENTER to skip): ");
-            String watchDate = scanner.nextLine();
-            LocalDate date = watchDate.isEmpty() ? LocalDate.now() : LocalDate.parse(watchDate);
-
-            review r = reviewService.create(currentUser.getUserID(), selected.getMovieID(), rating, review, date);
-
-            System.out.println("movie logged successfully");
-            System.out.println("rating: " + r.getFormattedRating());
-            pause();
-
-        
-        } catch (Exception e) {
-            System.out.println("failed to log movie: " + e.getMessage());
-            pause();
-        }
-
-    }*/
 
     private void viewReviews() {
         clearScreen();
@@ -569,10 +481,6 @@ public class UI {
         }
     }
 
-    private void browseGenre() {
-        clearScreen();
-        System.out.println("browse by genre");
-    }
 
     private void recentReviews() {
         clearScreen();

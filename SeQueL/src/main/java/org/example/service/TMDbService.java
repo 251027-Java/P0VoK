@@ -67,26 +67,69 @@ public class TMDbService {
             String jsonResponse = makeApiReq(endpoint);
             JsonObject response = gson.fromJson(jsonResponse, JsonObject.class);
 
-            return parseDetails(response);
+            // Fetch director from credits endpoint
+            String director = getDirector(ID);
+            if (director == null || director.isEmpty()) {
+                director = "Unknown";
+            }
+
+            return parseDetails(response, director);
         } catch (Exception e) {
             throw new RuntimeException("failed to get details from TMDb: " + e.getMessage(), e);
         }
     }
 
-    private movie parseDetails(JsonObject json) {
+    private String getDirector(int movieID) {
+        try {
+            String endpoint = String.format("%s/movie/%d/credits?api_key=%s", URL, movieID, apiKey);
+            String jsonResponse = makeApiReq(endpoint);
+            JsonObject response = gson.fromJson(jsonResponse, JsonObject.class);
+            
+            JsonArray crew = response.getAsJsonArray("crew");
+            for (JsonElement element : crew) {
+                JsonObject person = element.getAsJsonObject();
+                String job = person.has("job") ? person.get("job").getAsString() : "";
+                if ("Director".equals(job)) {
+                    return person.get("name").getAsString();
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            // If credits fetch fails, return null and we'll use "Unknown"
+            return null;
+        }
+    }
+
+    private movie parseDetails(JsonObject json, String director) {
         int tmdbID = json.get("id").getAsInt();
         String title = json.get("title").getAsString();
 
         LocalDate releaseDate = null;
-        if (json.has("release_date")) {
-            releaseDate = LocalDate.parse(json.get("release_date").getAsString());
+        if (json.has("release_date") && !json.get("release_date").isJsonNull()) {
+            String releaseDateStr = json.get("release_date").getAsString();
+            if (releaseDateStr != null && !releaseDateStr.isEmpty()) {
+                try {
+                    releaseDate = LocalDate.parse(releaseDateStr);
+                } catch (Exception e) {
+                    // If date parsing fails, leave as null
+                }
+            }
         }
 
-        String director = json.has("director") ? json.get("director").getAsString() : null;
-        String overview = json.has("overview") ? json.get("overview").getAsString() : null;
-        Integer runtime = json.has("runtime") ? json.get("runtime").getAsInt() : null;
+        String overview = json.has("overview") && !json.get("overview").isJsonNull() 
+            ? json.get("overview").getAsString() : null;
+        
+        // Database constraint requires runtime to be NULL or > 0, but movie model uses int (not Integer)
+        // So we default to 1 if runtime is missing or 0
+        int runtime = 1; // Default value
+        if (json.has("runtime") && !json.get("runtime").isJsonNull()) {
+            int apiRuntime = json.get("runtime").getAsInt();
+            if (apiRuntime > 0) {
+                runtime = apiRuntime;
+            }
+        }
 
-        return new movie(tmdbID, title, releaseDate, director, runtime, overview); // create constructor for this
+        return new movie(tmdbID, title, releaseDate, director, runtime, overview);
     }
 
     private TMDb parseSearch(JsonObject json) {

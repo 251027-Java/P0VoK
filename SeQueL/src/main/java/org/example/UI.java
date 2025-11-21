@@ -175,11 +175,11 @@ public class UI {
             }
         }
     }
-    
+
     private void mainMenu() {
         clearScreen();
         System.out.println("1.  Search Movies (TMDb)");
-        System.out.println("2.  Log a Movie");
+        //System.out.println("2.  Log a Movie");
         System.out.println("3.  View My Reviews");
         System.out.println("4.  View My Watchlist");
         //System.out.println("5.  Browse by Genre");
@@ -194,9 +194,9 @@ public class UI {
             case "1":
                 searchMovies();
                 break;
-            case "2":
+            /*case "2":
                 logMovie();
-                break;
+                break;*/
             case "3":
                 viewReviews();
                 break;
@@ -403,7 +403,7 @@ public class UI {
         }
     }
 
-    private void logMovie() {
+    /*private void logMovie() {
         clearScreen();
         System.out.println("enter movie title: ");
         String title = scanner.nextLine();
@@ -467,7 +467,7 @@ public class UI {
             pause();
         }
 
-    }
+    }*/
 
     private void viewReviews() {
         clearScreen();

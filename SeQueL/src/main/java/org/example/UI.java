@@ -330,8 +330,6 @@ public class UI {
             System.out.print("enter your rating (1-10): ");
             double rating = getDoubleInput(0.0, 10.0);
 
-            scanner.nextLine();
-
             System.out.print("enter your review (press enter to skip): ");
             String review = scanner.nextLine();
 

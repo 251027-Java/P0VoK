@@ -60,7 +60,7 @@ public class SQLInit {
     private void createReviewsTable() throws SQLException {
         String sql = """
                 CREATE TABLE IF NOT EXISTS reviews (
-                    reviewID INTEGER PRIMARY KEY,
+                    reviewID SERIAL PRIMARY KEY,
                     userID INTEGER NOT NULL,
                     movieID INTEGER NOT NULL,
                     rating DECIMAL(3,1) NOT NULL,

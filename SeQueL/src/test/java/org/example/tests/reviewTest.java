@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -95,4 +96,23 @@ public class reviewTest {
         assertEquals(testReview.getReviewID(), result.get(0).getReviewID());
         verify(reviewRepo).findUser(userID);
     }
+
+    // negative path review for not real user
+    @Test
+    void notRealUser() throws SQLException {
+        // arrange
+        int userID = 349;
+        int movieID = 1;
+        double rating = 3.5;
+
+        when(userRepo.readID(userID)).thenReturn(Optional.empty());
+
+        // act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> reviewService.create(userID, movieID, rating, "testreview", LocalDate.now()));
+
+        // assert
+        assertEquals("user not real", exception.getMessage());
+        verify(reviewRepo, never()).create(any(review.class));
+    }
+    
 }

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS public.users (
 CREATE TABLE IF NOT EXISTS movies (
                     movieID SERIAL PRIMARY KEY,
                     title VARCHAR(50) UNIQUE NOT NULL,
-                    director VARCHAR(50) UNIQUE NOT NULL,
+                    director VARCHAR(50) NOT NULL,
                     release_date DATE,
                     overview TEXT,
                     runtime INTEGER,
